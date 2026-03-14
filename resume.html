@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Skill Gap Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Roboto+Slab:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        body{
+            margin:0;
+            padding:0;
+            font-family:'Poppins',sans-serif;
+            background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+            color:white;
+            text-align:center;
+        }
+
+        .container{
+            width:70%;
+            margin:auto;
+            margin-top:60px;
+            padding:40px;
+            background: rgba(0,0,0,0.65);
+            border-radius:20px;
+            box-shadow:0px 0px 30px rgba(0,0,0,0.8);
+        }
+
+        /* Page Title */
+        h1{
+            font-size:48px;
+            font-family:'Playfair Display', serif;
+            background: linear-gradient(90deg, #ff8a00, #e52e71, #9be7ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom:35px;
+            font-weight:700;
+        }
+
+        input{
+            padding:12px;
+            border-radius:8px;
+            border:none;
+            margin-top:10px;
+            width:60%;
+            font-family:'Roboto Slab', serif;
+        }
+
+        button{
+            margin-top:20px;
+            padding:14px 32px;
+            font-size:18px;
+            border:none;
+            border-radius:12px;
+            background: #ff8a00;
+            color:white;
+            cursor:pointer;
+            font-weight:700;
+            transition:0.3s;
+        }
+
+        button:hover{
+            background:#e67300;
+        }
+
+        .result-box{
+            margin-top:50px;
+            text-align:left;
+            padding:25px;
+            border-radius:12px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Predicted job role label & value */
+        .prediction-label{
+            font-family:'Roboto Slab', serif;
+            color:#ffd54f; /* yellow */
+            font-size:22px;
+            font-weight:700;
+        }
+
+        .prediction-value{
+            font-family:'Roboto Slab', serif;
+            color:#ff6b6b; /* red-orange */
+            font-size:24px;
+            font-weight:700;
+            margin-left:12px;
+        }
+
+        .found-heading{
+            color:#00ffe5; /* cyan */
+            font-size:20px;
+            font-weight:600;
+            margin-top:20px;
+            margin-bottom:10px;
+            font-family:'Poppins', sans-serif;
+        }
+
+        .missing-heading{
+            color:#ffb400; /* bright orange */
+            font-size:20px;
+            font-weight:600;
+            margin-top:20px;
+            margin-bottom:10px;
+            font-family:'Poppins', sans-serif;
+        }
+
+        ul{
+            padding-left:25px;
+        }
+
+        .skill-found{
+            color:#00ff7f; /* green */
+            font-weight:500;
+            animation: fadein 1.5s;
+        }
+
+        @keyframes fadein {
+            0% {opacity:0;}
+            100% {opacity:1;}
+        }
+
+        .skill-gap{
+            color:#ff4500; /* red-orange */
+            font-weight:500;
+            animation: fadein 1.5s;
+        }
+
+        footer{
+            margin-top:60px;
+            padding:25px;
+            background: rgba(0,0,0,0.8);
+        }
+
+        footer h3{
+            color:#9be7ff;
+            margin-bottom:10px;
+            font-family:'Roboto Slab', serif;
+        }
+
+        footer p{
+            color:#bbb;
+            line-height:1.6;
+            font-family:'Poppins', sans-serif;
+        }
+
+        /* Quiz Button */
+        .quiz-button{
+            display:inline-block;
+            margin-top:25px;
+            padding:14px 32px;
+            font-size:18px;
+            font-weight:700;
+            border:none;
+            border-radius:12px;
+            background: #00bfff;
+            color:white;
+            cursor:pointer;
+            transition:0.3s;
+            text-decoration:none;
+        }
+
+        .quiz-button:hover{
+            background:#0099cc;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AI Skill Gap Analyzer – Level Up Your Skills!</h1>
+
+<form action="/predict" method="POST" enctype="multipart/form-data">
+    <input type="file" name="resume" required>
+    <br>
+    <button type="submit">Analyze Resume</button>
+</form>
+
+<!-- Quiz Button -->
+<a class="quiz-button" href="/quiz">Take the EV Skills Quiz</a>
+
+{% if prediction %}
+
+<div class="result-box">
+    <div>
+        <span class="prediction-label">Predicted Job Role:</span>
+        <span class="prediction-value">{{prediction}}</span>
+    </div>
+
+    <div class="found-heading">Skills Already in Your Resume:</div>
+    {% if found_skills %}
+        <ul>
+        {% for skill in found_skills %}
+            <li class="skill-found">{{skill}}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color:#00ff7f;">You have room to showcase your skills here!</p>
+    {% endif %}
+
+    <div class="missing-heading">Skills to Improve / Learn:</div>
+    {% if skill_gap %}
+        <ul>
+        {% for skill in skill_gap %}
+            <li class="skill-gap">{{skill}}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color:#ffb400;">Great job! You have all the key skills, but keep learning to stay ahead!</p>
+    {% endif %}
+</div>
+
+{% endif %}
+
+</div>
+
+<footer>
+<h3>Associated Institutions & Partners</h3>
+<p>
+AICTE – All India Council for Technical Education<br>
+NSDC – National Skill Development Corporation<br>
+MSDE – Ministry of Skill Development and Entrepreneurship<br>
+ASDC – Automotive Skills Development Council<br>
+EV Skill Council of India
+</p>
+</footer>
+
+</body>
+</html>
