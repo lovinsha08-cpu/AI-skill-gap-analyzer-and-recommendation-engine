@@ -5,7 +5,13 @@ import re
 import os
 from skills_reference import skills_reference
 from difflib import SequenceMatcher
-from quiz_questions import quiz_questions  # import your quiz questions
+import sys
+
+# -----------------------------
+# Import your quiz questions properly
+# -----------------------------
+sys.path.append(r"C:\Users\lovin\OneDrive\Documents\skillgap_analyzer")  # folder path
+from quiz_questions import quiz_questions  # your variable inside the file
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # required for session tracking in quiz
@@ -118,18 +124,25 @@ def predict():
 # -----------------------------
 # QUIZ ROUTES
 # -----------------------------
+# For now, select the first category automatically
+DEFAULT_CATEGORY = list(quiz_questions.keys())[0]
+
 @app.route("/quiz")
 def quiz():
     session['score'] = 0
     session['current'] = 0
+    session['category'] = DEFAULT_CATEGORY
     return redirect(url_for('question', q_no=0))
 
 @app.route("/question/<int:q_no>", methods=['GET', 'POST'])
 def question(q_no):
-    if q_no >= len(quiz_questions):
+    category = session['category']
+    questions = quiz_questions[category]  # list of questions for this category
+
+    if q_no >= len(questions):
         return redirect(url_for('result'))
 
-    q = quiz_questions[q_no]
+    q = questions[q_no]
 
     if request.method == 'POST':
         selected = request.form.get('option')
@@ -138,12 +151,14 @@ def question(q_no):
         session['current'] = q_no + 1
         return redirect(url_for('question', q_no=q_no+1))
 
-    return render_template('question.html', question=q, q_no=q_no, total=len(quiz_questions))
+    return render_template('question.html', question=q, q_no=q_no, total=len(questions))
 
 @app.route("/result")
 def result():
+    category = session.get('category', DEFAULT_CATEGORY)
+    questions = quiz_questions[category]
     score = session.get('score', 0)
-    total = len(quiz_questions)
+    total = len(questions)
     return render_template('result.html', score=score, total=total)
 
 # -----------------------------
